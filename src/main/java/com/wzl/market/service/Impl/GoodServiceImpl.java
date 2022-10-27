@@ -7,19 +7,17 @@ import com.wzl.market.service.GoodService;
 import com.wzl.market.utils.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GoodServiceImpl implements GoodService {
-    @Autowired
-    Authentication authentication;
-
-
 
     @Override
     public LoginUser putOnGood(Good good) {
-        LoginUser loginUser=(LoginUser) authentication.getPrincipal();
-
+        LoginUser loginUser=(LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println(loginUser.getUser().getUserId());
         return loginUser;
     }
 
