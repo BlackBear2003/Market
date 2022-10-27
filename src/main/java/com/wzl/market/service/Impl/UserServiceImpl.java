@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public ResponseResult setInfo(int id, String gender, String avatarUrl, String phoneNumber, String email) throws Exception {
         User user = userMapper.selectById(id);
         user.setGender(gender);
@@ -79,5 +80,13 @@ public class UserServiceImpl implements UserService {
         }else{
             throw new Exception();
         }
+    }
+
+    @Override
+    @Transactional
+    public ResponseResult getInfo(int id) {
+        User user = userMapper.selectById(id);
+        user.setPassword("********");
+        return new ResponseResult(200," 查询成功",user);
     }
 }

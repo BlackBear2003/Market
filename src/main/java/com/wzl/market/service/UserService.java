@@ -14,4 +14,6 @@ public interface UserService {
     public ResponseResult setLocation(int id,String tempAddress,String tempAddressProvince,String tempAddressCity,String tempAddressArea,double tempAddressLat,double tempAddressLng) throws Exception;
 
     public ResponseResult setInfo(int id,String gender,String avatarUrl,String phoneNumber,String email) throws Exception;
+
+    public ResponseResult getInfo(int id);
 }

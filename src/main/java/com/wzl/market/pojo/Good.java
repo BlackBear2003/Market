@@ -3,6 +3,7 @@ package com.wzl.market.pojo;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -13,11 +14,11 @@ import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 
 @Data
 @RequiredArgsConstructor
+@NoArgsConstructor
 @TableName("t_good")
 public class Good implements Serializable {
     private static final long serialVersionUID = 1L;
     @TableId(type=AUTO)
-    @NonNull
     private int good_id;
     @NonNull
     private String goodName;
