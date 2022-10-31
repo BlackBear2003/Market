@@ -34,13 +34,12 @@ public class DemoController {
 
     @ResponseBody
     @GetMapping("/testJson")
-    public LoginUser getJson(){
+    public User getJson(){
         User user = new User();
         user.setUserId(0);
         user.setUserName("test");
         user.setPassword("test");
-        LoginUser loginUser=goodService.putOnGood(new Good());
-        return loginUser;
+        return user;
     }
 
     @GetMapping("testResponse")

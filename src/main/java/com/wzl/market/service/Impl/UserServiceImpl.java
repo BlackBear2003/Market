@@ -4,17 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.wzl.market.dao.UserMapper;
 import com.wzl.market.pojo.User;
+import com.wzl.market.security.LoginUser;
 import com.wzl.market.service.UserService;
 import com.wzl.market.utils.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -23,7 +22,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseResult setGender(int id, String gender) throws Exception {
+    public ResponseResult setGender(String gender) throws Exception {
+        LoginUser loginUser = (LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int id = loginUser.getUser().getUserId();
         User user = userMapper.selectById(id);
         user.setGender(gender);
         int rows=userMapper.updateById(user);
@@ -36,7 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseResult setAvatar(int id, String url) throws Exception {
+    public ResponseResult setAvatar(String url) throws Exception {
+        LoginUser loginUser = (LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int id = loginUser.getUser().getUserId();
         User user = userMapper.selectById(id);
         user.setAvatarUrl(url);
         int rows=userMapper.updateById(user);
@@ -49,7 +52,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseResult setLocation(int id,String tempAddress,String tempAddressProvince,String tempAddressCity,String tempAddressArea,double tempAddressLat,double tempAddressLng) throws Exception {
+    public ResponseResult setLocation(String tempAddress,String tempAddressProvince,String tempAddressCity,String tempAddressArea,double tempAddressLat,double tempAddressLng) throws Exception {
+        LoginUser loginUser = (LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int id = loginUser.getUser().getUserId();
         User user = userMapper.selectById(id);
         user.setTempAddress(tempAddress);
         user.setTempAddressProvince(tempAddressProvince);
@@ -67,7 +72,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseResult setInfo(int id, String gender, String avatarUrl, String phoneNumber, String email) throws Exception {
+    public ResponseResult setInfo(String gender, String avatarUrl, String phoneNumber, String email) throws Exception {
+        LoginUser loginUser = (LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int id = loginUser.getUser().getUserId();
         User user = userMapper.selectById(id);
         user.setGender(gender);
         user.setAvatarUrl(avatarUrl);
@@ -84,9 +91,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseResult getInfo(int id) {
+    public ResponseResult getInfo() {
+        LoginUser loginUser = (LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int id = loginUser.getUser().getUserId();
         User user = userMapper.selectById(id);
-        user.setPassword("********");
         return new ResponseResult(200," 查询成功",user);
+    }
+
+    @Override
+    public ResponseResult getPublicInfo(int id) {
+        HashMap<String, Object> map = new HashMap<>();
+        User user=userMapper.selectById(id);
+        map.put("userName",user.getUserName());
+        map.put("phoneNumber",user.getPhoneNumber());
+        map.put("email",user.getEmail());
+        map.put("avatarUrl",user.getAvatarUrl());
+        map.put("gender",user.getGender());
+        map.put("province",user.getTempAddressProvince());
+        map.put("city",user.getTempAddressCity());
+        return new ResponseResult(200,"查询成功",map);
     }
 }

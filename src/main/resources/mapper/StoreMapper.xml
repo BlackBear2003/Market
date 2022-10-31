@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wzl.market.dao.StoreMapper">
+    <select id="selectStoreIdByUserId" parameterType="int" resultType="int">
+        select store_id
+        from t_user_store where user_id = #{user_id};
+    </select>
+
+    <insert id="insertGoodIdForStore" parameterType="int" >
+        insert into t_store_good (store_id,good_id)
+        values (#{store_id}, #{good_id});
+    </insert>
+
+    <insert id="insertUserStoreBind" parameterType="int" >
+        insert into t_user_store (user_id,store_id)
+        values (#{user_id}, #{store_id});
+    </insert>
+
+    <delete id="deleteUserStoreBind" parameterType="int" >
+        delete
+        from t_user_store
+        where user_id = #{user_id};
+    </delete>
+
+    <select id="getGoodIdByStoreId" parameterType="int" resultType="Integer">
+        select good_id from t_store_good where store_id= #{store_id}
+    </select>
+
+</mapper>

@@ -19,11 +19,11 @@ public class Store implements Serializable {
     private int storeId;
     private String storeName;
     private String storeIntroduction;
-    private String store_phone;
-    private String store_address;
-    private String store_address_province;
-    private String store_address_city;
-    private String store_address_area;
-    private double store_address_lat;
-    private double store_address_lng;
+    private String storePhone;
+    private String storeAddress;
+    private String storeAddressProvince;
+    private String storeAddressCity;
+    private String storeAddressArea;
+    private double storeAddressLat;
+    private double storeAddressLng;
 }

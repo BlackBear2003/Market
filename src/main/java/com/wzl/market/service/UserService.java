@@ -7,13 +7,14 @@ import java.util.List;
 
 public interface UserService {
 
-    ResponseResult setGender(int id,String gender) throws Exception;
+    ResponseResult setGender(String gender) throws Exception;
 
-    ResponseResult setAvatar(int id,String url) throws Exception;
+    ResponseResult setAvatar(String url) throws Exception;
 
-    public ResponseResult setLocation(int id,String tempAddress,String tempAddressProvince,String tempAddressCity,String tempAddressArea,double tempAddressLat,double tempAddressLng) throws Exception;
+    public ResponseResult setLocation(String tempAddress,String tempAddressProvince,String tempAddressCity,String tempAddressArea,double tempAddressLat,double tempAddressLng) throws Exception;
 
-    public ResponseResult setInfo(int id,String gender,String avatarUrl,String phoneNumber,String email) throws Exception;
+    public ResponseResult setInfo(String gender,String avatarUrl,String phoneNumber,String email) throws Exception;
 
-    public ResponseResult getInfo(int id);
+    public ResponseResult getInfo();
+    public ResponseResult getPublicInfo(int id);
 }
