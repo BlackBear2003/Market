@@ -21,12 +21,12 @@ public class FileController {
     @Autowired
     DownLoadServiceImpl downLoadService;
 
-    @PostMapping("file/upload")
+    @PostMapping("/file/upload")
     public ResponseResult upload(MultipartFile multipartFile) throws IOException {
         return uploadService.upload(multipartFile);
     }
 
-    @GetMapping("file/download")
+    @GetMapping("/file/download")
     public HttpServletResponse download(String url, HttpServletResponse response) throws IOException {
         return downLoadService.download(url,response);
     }

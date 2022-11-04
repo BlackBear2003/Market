@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -17,8 +18,7 @@ import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 @RequiredArgsConstructor
 @TableName("t_user")
 public class User implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2873551059175095456L;
     @NonNull
     @TableId(value = "user_id",type =AUTO)
     private int userId;
@@ -36,6 +36,6 @@ public class User implements Serializable {
     private String tempAddressArea;
     private double tempAddressLat;
     private double tempAddressLng;
-
+    private int auditStatus;
 
 }

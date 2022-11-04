@@ -17,7 +17,8 @@ import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 @NoArgsConstructor
 @TableName("t_good")
 public class Good implements Serializable {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -5474070412887279676L;
     @TableId(type=AUTO)
     private int good_id;
     @NonNull

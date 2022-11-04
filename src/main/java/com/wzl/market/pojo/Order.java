@@ -15,7 +15,8 @@ import java.util.Date;
 @RequiredArgsConstructor
 @TableName("t_order")
 public class Order implements Serializable {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -1650133280584108737L;
     @TableId(type= AUTO)
     private int orderId;
     private int userId;
@@ -34,5 +35,9 @@ public class Order implements Serializable {
     private Date payTime;
     private Date receiveTime;
     private int orderStatus;
+    private int goodId;
+    private int goodCnt;
+    private double goodPrice;
+    private int storeId;
 
 }

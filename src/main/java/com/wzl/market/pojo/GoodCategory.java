@@ -9,8 +9,8 @@ import java.io.Serializable;
 @Data
 @TableName("t_good_category")
 public class GoodCategory implements Serializable {
-    private static final long serialVersionUID=1L;
 
+    private static final long serialVersionUID = -257554461365396173L;
     @TableId
     private int category_id;
     private String categoryName;

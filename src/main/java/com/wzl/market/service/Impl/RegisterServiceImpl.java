@@ -18,7 +18,7 @@ public class RegisterServiceImpl implements RegisterService {
     UserMapper userMapper;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult register(String username, String password) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("user_name",username);

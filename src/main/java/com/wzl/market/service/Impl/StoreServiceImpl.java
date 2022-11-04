@@ -1,10 +1,13 @@
 package com.wzl.market.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wzl.market.dao.GoodMapper;
 import com.wzl.market.dao.StoreMapper;
 import com.wzl.market.pojo.Good;
 import com.wzl.market.pojo.Store;
+import com.wzl.market.pojo.User;
 import com.wzl.market.security.LoginUser;
 import com.wzl.market.service.GoodService;
 import com.wzl.market.service.StoreService;
@@ -24,20 +27,26 @@ public class StoreServiceImpl implements StoreService {
     @Autowired
     GoodMapper goodMapper;
 
+    @Override
+    public ResponseResult getAll(int current, int size){
+        Page<Store> page = new Page<>(current,size);
+        IPage<Store> iPage = storeMapper.selectPage(page,null);
+        long total = iPage.getTotal();
+        List<Store> list = iPage.getRecords();
+        return new ResponseResult(200,"total:"+total,list);
+    }
 
     @Override
-    @Transactional
-    public ResponseResult create(Store store) {
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int id = loginUser.getUser().getUserId();
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseResult create(int user_id, Store store) {
         store.setStoreId(0);
         storeMapper.insert(store);
-        storeMapper.insertUserStoreBind(id,store.getStoreId());
+        storeMapper.insertUserStoreBind(user_id,store.getStoreId());
         return new ResponseResult<>(200,"创建成功");
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult locate(String tempAddress, String tempAddressProvince, String tempAddressCity, String tempAddressArea, double tempAddressLat, double tempAddressLng) {
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int id = loginUser.getUser().getUserId();
@@ -54,36 +63,28 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    @Transactional
-    public ResponseResult delete() {
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int id = loginUser.getUser().getUserId();
-        int storeId=storeMapper.selectStoreIdByUserId(id);
-        storeMapper.deleteById(storeId);
-        storeMapper.deleteUserStoreBind(id);
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseResult delete(int user_id,int store_id) {
+        storeMapper.deleteById(store_id);
+        storeMapper.deleteUserStoreBind(user_id);
         return new ResponseResult(200,"删除成功");
     }
 
     @Override
-    @Transactional
     public ResponseResult get(int storeId) {
         Store store = storeMapper.selectById(storeId);
         return new ResponseResult(200,"查询成功",store);
     }
 
     @Override
-    @Transactional
-    public ResponseResult update(Store store) {
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int id = loginUser.getUser().getUserId();
-        int storeId=storeMapper.selectStoreIdByUserId(id);
-        store.setStoreId(storeId);
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseResult update(int store_id, Store store) {
+        store.setStoreId(store_id);
         storeMapper.updateById(store);
         return new ResponseResult(200,"修改成功");
     }
 
     @Override
-    @Transactional
     public ResponseResult listPublishGoods(int storeId) {
         List<Integer> idList = storeMapper.getGoodIdByStoreId(storeId);
         QueryWrapper<Good> wrapper=new QueryWrapper<>();
@@ -94,7 +95,6 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    @Transactional
     public ResponseResult listUnPublishGoods() {
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int id = loginUser.getUser().getUserId();
@@ -106,4 +106,10 @@ public class StoreServiceImpl implements StoreService {
         List<Good> list = goodMapper.selectList(wrapper);
         return new ResponseResult<>(200,"查询成功",list);
     }
+
+    @Override
+    public int getStoreIdByUserId(int user_id){
+        return storeMapper.selectStoreIdByUserId(user_id);
+    }
+
 }

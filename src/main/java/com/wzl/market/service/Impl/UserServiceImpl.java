@@ -2,6 +2,8 @@ package com.wzl.market.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wzl.market.dao.UserMapper;
 import com.wzl.market.pojo.User;
 import com.wzl.market.security.LoginUser;
@@ -52,9 +54,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseResult setLocation(String tempAddress,String tempAddressProvince,String tempAddressCity,String tempAddressArea,double tempAddressLat,double tempAddressLng) throws Exception {
-        LoginUser loginUser = (LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int id = loginUser.getUser().getUserId();
+    public ResponseResult setLocation(int id,String tempAddress,String tempAddressProvince,String tempAddressCity,String tempAddressArea,double tempAddressLat,double tempAddressLng) throws Exception {
+
         User user = userMapper.selectById(id);
         user.setTempAddress(tempAddress);
         user.setTempAddressProvince(tempAddressProvince);
@@ -70,11 +71,10 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
     @Override
     @Transactional
-    public ResponseResult setInfo(String gender, String avatarUrl, String phoneNumber, String email) throws Exception {
-        LoginUser loginUser = (LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int id = loginUser.getUser().getUserId();
+    public ResponseResult setInfo(int id,String gender, String avatarUrl, String phoneNumber, String email) throws Exception {
         User user = userMapper.selectById(id);
         user.setGender(gender);
         user.setAvatarUrl(avatarUrl);
@@ -91,14 +91,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseResult getInfo() {
-        LoginUser loginUser = (LoginUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int id = loginUser.getUser().getUserId();
+    public ResponseResult getAllInfo(int id) {
         User user = userMapper.selectById(id);
-        return new ResponseResult(200," 查询成功",user);
+        return new ResponseResult(200,"自己的全部信息",user);
     }
 
     @Override
+    @Transactional
     public ResponseResult getPublicInfo(int id) {
         HashMap<String, Object> map = new HashMap<>();
         User user=userMapper.selectById(id);
@@ -109,6 +108,16 @@ public class UserServiceImpl implements UserService {
         map.put("gender",user.getGender());
         map.put("province",user.getTempAddressProvince());
         map.put("city",user.getTempAddressCity());
-        return new ResponseResult(200,"查询成功",map);
+        return new ResponseResult(200,"用户的公开信息",map);
+    }
+
+    @Override
+    @Transactional
+    public ResponseResult getUsersByPage(int current,int size){
+        Page<User> page = new Page<>(current,size);
+        IPage<User> iPage = userMapper.selectPage(page,null);
+        long total = iPage.getTotal();
+        List<User> list = iPage.getRecords();
+        return new ResponseResult(200,"total:"+total,list);
     }
 }

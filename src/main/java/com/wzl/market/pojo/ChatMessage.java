@@ -11,18 +11,19 @@ import java.util.Date;
 
 import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 
-@TableName("t_message")
+@TableName("t_chat_message")
 @Data
 @RequiredArgsConstructor
-public class Message implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class ChatMessage implements Serializable {
+
+    private static final long serialVersionUID = 7023518932970885705L;
     @TableId(type=AUTO)
-    private int messageId;
-    private String messageType;
+    private int chatMessageId;
+    private String chatMessageType;
     private String text;
     private String url;
     private Date createDate;
     private int senderId;
     private int receiverId;
-    private int messageStatus;
+    private int chatMessageStatus;
 }

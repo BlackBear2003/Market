@@ -15,7 +15,8 @@ import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 @RequiredArgsConstructor
 @TableName("t_good_comment")
 public class GoodComment implements Serializable {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -2687743024921980062L;
     @TableId(type = AUTO)
     @NonNull
     private int commentId;

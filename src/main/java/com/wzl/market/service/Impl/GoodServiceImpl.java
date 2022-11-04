@@ -35,7 +35,7 @@ public class GoodServiceImpl implements GoodService {
     GoodPictureMapper goodPictureMapper;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult putOnGood(Good good) {
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int id = loginUser.getUser().getUserId();
@@ -47,7 +47,7 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult setGoodPicture(GoodPicture goodPicture) {
         QueryWrapper<Good> wrapper = new QueryWrapper<>();
         wrapper.eq("good_id",goodPicture.getGoodId());
@@ -57,11 +57,13 @@ public class GoodServiceImpl implements GoodService {
             goodPictureMapper.insert(goodPicture);
             return new ResponseResult<>(200,"success",goodPicture);
         }
-        else return new ResponseResult<>(HttpStatus.SERVICE_UNAVAILABLE.value(), "没有找到对应商品");
+        else {
+            return new ResponseResult<>(HttpStatus.SERVICE_UNAVAILABLE.value(), "没有找到对应商品");
+        }
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult setPrice(int id, double price) {
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int user_id = loginUser.getUser().getUserId();
@@ -80,7 +82,7 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult publish(int id) {
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int user_id = loginUser.getUser().getUserId();
@@ -100,7 +102,7 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult unPublish(int id) {
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int user_id = loginUser.getUser().getUserId();
@@ -119,21 +121,21 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult getGood(int id) {
         Good good = goodMapper.selectById(id);
         return new ResponseResult<>(200,"success",good);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult getGoodsByCategoryId(int cateId) {
         List<Good> list = goodMapper.getGoodsByCategoryId(cateId);
         return new ResponseResult<>(200,"success",list);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult getGoodPicture(int goodId) {
         Map<String,Object> map = new HashMap<>();
         map.put("good_id",goodId);
@@ -142,7 +144,7 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult deleteGoodPicture(int pictureId) {
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int user_id = loginUser.getUser().getUserId();

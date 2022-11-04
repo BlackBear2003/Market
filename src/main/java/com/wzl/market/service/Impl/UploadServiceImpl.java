@@ -16,11 +16,12 @@ import java.util.UUID;
 
 @Service
 public class UploadServiceImpl implements UploadService {
-    public static final String bucketName = "luke-1309838234";
+    public static final String BUCKET_NAME = "luke-1309838234";
 
     @Autowired
     COSClient cosClient;
 
+    @Override
     public ResponseResult upload(MultipartFile multipartFile) throws IOException {
         String newFileName = generateUniqueName(multipartFile.getOriginalFilename());
         //生成临时文件
@@ -30,7 +31,7 @@ public class UploadServiceImpl implements UploadService {
 
         //文件在存储桶中的key
         //创建存储对象的请求
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, newFileName, file);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET_NAME, newFileName, file);
         //执行上传并返回结果信息
         PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
         cosClient.shutdown();

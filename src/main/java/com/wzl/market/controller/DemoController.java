@@ -21,7 +21,7 @@ public class DemoController {
     //@ResponseBody
 
     @GetMapping("/demo")
-    @PreAuthorize("hasAuthority('goodbye')")
+    @PreAuthorize("hasAnyAuthority('goodbye')")
     public String  getDemo(){
         return "hello world";
     }

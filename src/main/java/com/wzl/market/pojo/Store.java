@@ -14,7 +14,8 @@ import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 @RequiredArgsConstructor
 @TableName("t_store")
 public class Store implements Serializable {
-    private static final long serialVersionUID=1L;
+
+    private static final long serialVersionUID = 6661190126797797333L;
     @TableId(type=AUTO)
     private int storeId;
     private String storeName;

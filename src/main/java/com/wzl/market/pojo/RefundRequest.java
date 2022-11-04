@@ -14,7 +14,8 @@ import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 @RequiredArgsConstructor
 @TableName("t_refund_request")
 public class RefundRequest implements Serializable {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = -6938170802415447353L;
     @TableId(type=AUTO)
     private int refundId;
     private int orderId;
