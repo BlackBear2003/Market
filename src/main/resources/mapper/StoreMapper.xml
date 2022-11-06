@@ -19,11 +19,20 @@
     <delete id="deleteUserStoreBind" parameterType="int" >
         delete
         from t_user_store
-        where user_id = #{user_id};
+        where store_id = #{store_id};
     </delete>
 
     <select id="getGoodIdByStoreId" parameterType="int" resultType="Integer">
         select good_id from t_store_good where store_id= #{store_id}
     </select>
+    <select id="getStoreIdByGoodId" parameterType="int" resultType="Integer">
+        select store_id from t_store_good where good_id= #{good_id}
+    </select>
+
+    <delete id="deleteGoodStoreBind" parameterType="int" >
+        delete
+        from t_store_good
+        where good_id = #{good_id};
+    </delete>
 
 </mapper>

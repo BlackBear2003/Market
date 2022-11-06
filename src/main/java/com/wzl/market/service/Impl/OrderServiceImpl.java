@@ -3,6 +3,7 @@ package com.wzl.market.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wzl.market.dao.OrderMapper;
 import com.wzl.market.dao.StoreMapper;
 import com.wzl.market.pojo.Order;
@@ -17,7 +18,7 @@ import java.util.*;
 
 
 @Service
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements OrderService {
     @Autowired
     OrderMapper orderMapper;
     @Autowired

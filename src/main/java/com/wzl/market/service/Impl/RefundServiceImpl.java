@@ -3,6 +3,7 @@ package com.wzl.market.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wzl.market.dao.OrderMapper;
 import com.wzl.market.dao.RefundRequestMapper;
 import com.wzl.market.dao.StoreMapper;
@@ -19,13 +20,11 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class RefundServiceImpl implements RefundService {
+public class RefundServiceImpl extends ServiceImpl<RefundRequestMapper,RefundRequest> implements RefundService {
     @Autowired
     RefundRequestMapper refundRequestMapper;
     @Autowired
     OrderMapper orderMapper;
-    @Autowired
-    StoreMapper storeMapper;
 
     @Override
     public ResponseResult getAllByStoreId(int store_id, int current, int size) {
@@ -74,28 +73,6 @@ public class RefundServiceImpl implements RefundService {
         return new ResponseResult(200,"success");
     }
 
-    @Override
-    public Boolean isStoreOfRefund(int user_id, int refund_id) {
-        RefundRequest refundRequest = refundRequestMapper.selectById(refund_id);
-        int orderId=refundRequest.getOrderId();
-        Order order = orderMapper.selectById(orderId);
-        int store_id=storeMapper.selectStoreIdByUserId(user_id);
-        if(order.getStoreId()==store_id){
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public Boolean isBuyerOfRefund(int user_id, int refund_id) {
-        RefundRequest refundRequest = refundRequestMapper.selectById(refund_id);
-        int orderId=refundRequest.getOrderId();
-        Order order = orderMapper.selectById(orderId);
-        if(order.getUserId()==user_id){
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public ResponseResult getAllByUserId(int user_id, int current, int size) {

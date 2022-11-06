@@ -64,9 +64,10 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult delete(int user_id,int store_id) {
+    public ResponseResult delete(int store_id) {
         storeMapper.deleteById(store_id);
-        storeMapper.deleteUserStoreBind(user_id);
+
+        storeMapper.deleteUserStoreBindByStoreId(store_id);
         return new ResponseResult(200,"删除成功");
     }
 

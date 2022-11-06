@@ -4,6 +4,8 @@ import com.wzl.market.dao.UserMapper;
 import com.wzl.market.pojo.User;
 import com.wzl.market.security.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,11 +34,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         List<String> list=userMapper.getAuthByUserName(username);
         //System.out.println(list);
-        User returnUser = new User();
-        returnUser.setUserId(user.getUserId());
-        returnUser.setUserName(user.getUserName());
-        returnUser.setPassword(password);
-        return new LoginUser(returnUser//这里的密码是加盐的)
+        user.setPassword(password);
+        return new LoginUser(user//这里的密码是加盐的)
                 ,list);
 
     }

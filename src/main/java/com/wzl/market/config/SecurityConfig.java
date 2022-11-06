@@ -3,15 +3,18 @@ package com.wzl.market.config;
 import com.wzl.market.security.AccessDeniedHandlerImpl;
 import com.wzl.market.security.AuthenticationEntryPointImpl;
 import com.wzl.market.security.JwtAuthenticationTokenFilter;
+import com.wzl.market.security.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -44,16 +47,24 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 // 对于登录接口 允许匿名访问
-                .antMatchers("/user/login").anonymous()
-                .antMatchers("/user/register").anonymous()
-                .antMatchers("/file/download").anonymous()//test
-                .antMatchers("/location").anonymous()//test
-                .antMatchers("/file/upload").anonymous()//test
-                .antMatchers("/static/**",
-                        "/swagger-resources/**" //swagger需要的静态资源路径
-                        ,"/v3/**"
-                        ,"/swagger-ui/**"
-                        ,"**/upload/**").permitAll()
+                .antMatchers("/api/user/account/login").anonymous()
+                .antMatchers("/api/user").anonymous()
+                .antMatchers("/api/user/account/register").anonymous()
+                .antMatchers("/api/file/download").anonymous()//test
+                .antMatchers("/api/file/upload").anonymous()//test
+                .antMatchers(HttpMethod.GET, // Swagger的资源路径需要允许访问
+                        "/",
+                        "/swagger-ui.html",
+                        "/swagger-ui/",
+                        "/*.html",
+                        "/favicon.ico",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js",
+                        "/swagger-resources/**",
+                        "/v3/api-docs/**"
+                )
+                .permitAll()
                 .anyRequest().authenticated();
 
         //把token校验过滤器添加到过滤器链中

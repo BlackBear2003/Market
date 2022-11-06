@@ -1,5 +1,14 @@
 package com.wzl.market.controller;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.wzl.market.aop.StoreAuthCheck;
+import com.wzl.market.aop.StoreGoodCheck;
+import com.wzl.market.aop.StoreOrderCheck;
+import com.wzl.market.aop.StoreRefundCheck;
+import com.wzl.market.pojo.Good;
 import com.wzl.market.pojo.Store;
 import com.wzl.market.security.LoginUser;
 import com.wzl.market.service.Impl.GoodServiceImpl;
@@ -14,8 +23,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/store")
+@RequestMapping("/api/store")
 public class StoreController {
     @Autowired
     StoreServiceImpl storeService;
@@ -46,100 +57,101 @@ public class StoreController {
     }
 
     @PutMapping("/{store_id}")
+    @StoreAuthCheck
     public ResponseResult updateStoreInfo(@PathVariable("store_id")int store_id,@RequestBody Store store){
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int user_id = loginUser.getUser().getUserId();
-        int user_store_id = storeService.getStoreIdByUserId(user_id);
-        if(user_store_id==store_id||loginUser.getAuthorities().contains("admin")){
-            return storeService.update(store_id,store);
-        }else{
-            return new ResponseResult(401,"权限不足");
-        }
+        return storeService.update(store_id,store);
     }
     @DeleteMapping("/{store_id}")
+    @StoreAuthCheck
     public ResponseResult updateStoreInfo(@PathVariable("store_id")int store_id){
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int user_id = loginUser.getUser().getUserId();
-        int user_store_id = storeService.getStoreIdByUserId(user_id);
-        if(user_store_id==store_id||loginUser.getAuthorities().contains("admin")){
-            return storeService.delete(user_id,store_id);
-        }else{
-            return new ResponseResult(401,"权限不足");
-        }
+        return storeService.delete(store_id);
     }
 
     @GetMapping("/{store_id}/order")
+    @StoreAuthCheck
     public ResponseResult getStoreOrders(@PathVariable("store_id")int store_id,@Param("current")int current, @Param("size")int size ){
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int user_id = loginUser.getUser().getUserId();
-        int user_store_id = storeService.getStoreIdByUserId(user_id);
-        if(user_store_id==store_id||loginUser.getAuthorities().contains("admin")){
-            return orderService.getAllByStoreId(store_id, current, size);
-        }
-        else{
-            return new ResponseResult(401,"权限不足");
-        }
+        return orderService.getAllByStoreId(store_id, current, size);
     }
 
     @GetMapping("/{store_id}/order/{order_id}")
+    @StoreOrderCheck
+    @StoreAuthCheck
     public ResponseResult getOrderInfo(@PathVariable("store_id")int store_id,@PathVariable("order_id")int order_id){
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int user_id = loginUser.getUser().getUserId();
-        if(orderService.isStoreOfOrder(user_id,order_id)||loginUser.getAuthorities().contains("admin")){
-            return orderService.getOrderInfo(order_id);
-        }
-        else{
-            return new ResponseResult(401,"权限不足");
-        }
+        return orderService.getOrderInfo(order_id);
     }
 
     @PutMapping("/{store_id}/order/{order_id}")
-    public ResponseResult setShippingInfo(@PathVariable("order_id")int order_id, int shipType, String shippingCompName, String shippingSn){
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int user_id = loginUser.getUser().getUserId();
-        if(orderService.isStoreOfOrder(user_id,order_id)||loginUser.getAuthorities().contains("admin")){
-            return orderService.updateOrderShippingInfo(order_id, shipType, shippingCompName, shippingSn);
-        }
-        else{
-            return new ResponseResult(401,"权限不足");
-        }
+    public ResponseResult setShippingInfo(@PathVariable("store_id")int store_id, @PathVariable("order_id")int order_id, int shipType, String shippingCompName, String shippingSn){
+        return orderService.updateOrderShippingInfo(order_id, shipType, shippingCompName, shippingSn);
     }
 
     @GetMapping("/{store_id}/refund")
+    @StoreAuthCheck
     public ResponseResult getStoreRefund(@PathVariable("store_id")int store_id, int current, int size){
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int user_id = loginUser.getUser().getUserId();
-        int user_store_id = storeService.getStoreIdByUserId(user_id);
-        if(user_store_id==store_id||loginUser.getAuthorities().contains("admin")){
-            return refundService.getAllByStoreId(store_id, current, size);
-        }else{
-            return new ResponseResult(401,"权限不足");
-        }
+        return refundService.getAllByStoreId(store_id, current, size);
     }
 
     @GetMapping("/{store_id}/refund/{refund_id}")
+    @StoreAuthCheck
+    @StoreRefundCheck
     public ResponseResult getRefundInfo(@PathVariable("store_id")int store_id,@PathVariable("refund_id")int refund_id){
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int user_id = loginUser.getUser().getUserId();
-        if(refundService.isStoreOfRefund(user_id,refund_id)){
-            return refundService.getRefundInfo(refund_id);
-        }else{
-            return new ResponseResult(401,"权限不足");
-        }
+        return refundService.getRefundInfo(refund_id);
+
     }
 
     @PutMapping("/{store_id}/refund/{refund_id}")
+    @StoreAuthCheck
+    @StoreRefundCheck
     public ResponseResult setStatusByStore(@PathVariable("store_id")int store_id,@PathVariable("refund_id")int refund_id){
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int user_id = loginUser.getUser().getUserId();
-        if(refundService.isStoreOfRefund(user_id,refund_id)){
-            return refundService.storeSetRefundStatus(refund_id);
-        }else{
-            return new ResponseResult(401,"权限不足");
-        }
+        return refundService.storeSetRefundStatus(refund_id);
+
     }
 
-    //******************************商品模块**********************************
+    /******************************商品模块**********************************/
+
+    @GetMapping("/{store_id}/good")
+    public ResponseResult getAllGood(@PathVariable("store_id")int store_id,@Param("current")int current, @Param("size")int size){
+        Page<Good> page = new Page<>(current,size);
+        QueryWrapper<Good> wrapper = new QueryWrapper<>();
+        wrapper.eq("store_id",store_id);
+        IPage<Good> goodIPage = goodService.page(page);
+        List<Good> list = goodIPage.getRecords();
+        return new ResponseResult(200,"total:"+goodIPage.getTotal(),list);
+    }
+
+    @PostMapping("/{store_id}/good")
+    @StoreAuthCheck
+    public ResponseResult publishGood(@PathVariable("store_id")int store_id,@RequestBody Good good){
+        return goodService.putOnGood(store_id,good);
+    }
+
+    @GetMapping("/{store_id}/good/{good_id}")
+    public ResponseResult getGoodInfo(@PathVariable("store_id")int store_id,@PathVariable("good_id")int good_id){
+        return goodService.getGood(good_id);
+    }
+
+    @PutMapping("/{store_id}/good/{good_id}")
+    @StoreAuthCheck
+    @StoreGoodCheck
+    public ResponseResult updateGoodInfo(@PathVariable("store_id")int store_id,@PathVariable("good_id")int good_id,
+                                        @RequestBody Good good){
+        boolean status = goodService.updateById(good);
+        if(status)
+            return new ResponseResult(200,"success");
+        else
+            return new ResponseResult(405,"something error");
+    }
+
+    @DeleteMapping("/{store_id}/good/{good_id}")
+    @StoreAuthCheck
+    @StoreGoodCheck
+    public ResponseResult deleteGood(@PathVariable("store_id")int store_id,@PathVariable("good_id")int good_id){
+        return goodService.deleteGood(good_id);
+    }
+
+    /***********************店铺定位    但是感觉好像没有必要做-- *********************/
+
+
 
 
 }

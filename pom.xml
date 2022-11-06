@@ -18,6 +18,11 @@
     </properties>
     <dependencies>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.qcloud/cos_api -->
         <dependency>
             <groupId>com.qcloud</groupId>

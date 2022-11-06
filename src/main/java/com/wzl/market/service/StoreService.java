@@ -12,7 +12,7 @@ public interface StoreService {
 
     public ResponseResult locate(String tempAddress, String tempAddressProvince, String tempAddressCity, String tempAddressArea, double tempAddressLat, double tempAddressLng);
 
-    public ResponseResult delete(int user_id,int store_id);
+    public ResponseResult delete(int store_id);
 
     public ResponseResult get(int storeId);
 

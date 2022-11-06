@@ -1,5 +1,6 @@
 package com.wzl.market.controller;
 
+import com.wzl.market.aop.UserAuthCheck;
 import com.wzl.market.pojo.User;
 import com.wzl.market.security.LoginUser;
 import com.wzl.market.service.Impl.LoginServiceImpl;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
     @Autowired
     LoginServiceImpl loginService;
@@ -52,41 +53,31 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    public ResponseResult getInfo(@PathVariable("id")int id){
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int login_id = loginUser.getUser().getUserId();
-        if(login_id==id||loginUser.getAuthorities().contains("admin")){
-            return userService.getAllInfo(id);
-        }
-        else{
-            return userService.getPublicInfo(id);
-        }
+    @UserAuthCheck
+    public ResponseResult getAllInfo(@PathVariable("id")int id){
+        return userService.getAllInfo(id);
+    }
+
+    @GetMapping("/{id}/public")
+    public ResponseResult getPublicInfo(@PathVariable("id")int id){
+        return userService.getPublicInfo(id);
     }
 
     @PutMapping("/{id}")
+    @UserAuthCheck
     public ResponseResult updateInfo(@PathVariable("id")int id,@RequestBody User user) throws Exception {
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int login_id = loginUser.getUser().getUserId();
-        if(login_id==id||loginUser.getAuthorities().contains("admin")){
-            return userService.setInfo(login_id,user.getGender(),user.getAvatarUrl(),user.getPhoneNumber(),user.getEmail());
-        }
-        else{
-            return new ResponseResult(403,"权限不足");
-        }
+        return userService.setInfo(id,user.getGender(),user.getAvatarUrl(),user.getPhoneNumber(),user.getEmail());
     }
 
-    @GetMapping("/location")
-    public ResponseResult getUserLocation(){
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int login_id = loginUser.getUser().getUserId();
-        return userService.getAllInfo(login_id);
+    @GetMapping("/{id}/location")
+    @UserAuthCheck
+    public ResponseResult getUserLocation(@PathVariable("id")int id){
+        return userService.getAllInfo(id);
     }
 
-    @PutMapping ("/location")
-    public ResponseResult setLocation(String tempAddress,String tempAddressProvince,String tempAddressCity,String tempAddressArea,double tempAddressLat,double tempAddressLng) throws Exception {
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int login_id = loginUser.getUser().getUserId();
-        return userService.setLocation(login_id,tempAddress,tempAddressProvince,tempAddressCity,tempAddressArea,tempAddressLat,tempAddressLng);
+    @PutMapping ("/{id}/location")
+    public ResponseResult setLocation(@PathVariable("id")int id,String tempAddress,String tempAddressProvince,String tempAddressCity,String tempAddressArea,double tempAddressLat,double tempAddressLng) throws Exception {
+        return userService.setLocation(id,tempAddress,tempAddressProvince,tempAddressCity,tempAddressArea,tempAddressLat,tempAddressLng);
     }
 
 }

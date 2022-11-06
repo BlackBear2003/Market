@@ -1,9 +1,10 @@
 package com.wzl.market.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.wzl.market.pojo.Order;
 import com.wzl.market.utils.ResponseResult;
 
-public interface OrderService {
+public interface OrderService extends IService<Order> {
     public ResponseResult getAllByStoreId(int store_id,int current,int size);
     public ResponseResult getOrderInfo(int order_id);
     public ResponseResult updateOrderShippingInfo(int order_id,int shipType,String shippingCompName,String shippingSn) throws Exception;

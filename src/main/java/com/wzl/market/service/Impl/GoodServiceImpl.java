@@ -1,6 +1,7 @@
 package com.wzl.market.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wzl.market.dao.GoodCommentMapper;
 import com.wzl.market.dao.GoodMapper;
 import com.wzl.market.dao.GoodPictureMapper;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class GoodServiceImpl implements GoodService {
+public class GoodServiceImpl extends ServiceImpl<GoodMapper,Good> implements GoodService {
 
     @Autowired
     StoreMapper storeMapper;
@@ -36,10 +37,7 @@ public class GoodServiceImpl implements GoodService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult putOnGood(Good good) {
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int id = loginUser.getUser().getUserId();
-        int store_id=storeMapper.selectStoreIdByUserId(id);
+    public ResponseResult putOnGood(int store_id,Good good) {
         good.setGood_id(0);
         goodMapper.insert(good);
         storeMapper.insertGoodIdForStore(store_id,good.getGood_id());
@@ -159,6 +157,14 @@ public class GoodServiceImpl implements GoodService {
             }
         }
         return new ResponseResult<>(HttpStatus.UNAUTHORIZED.value(), "不是您的商品");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseResult deleteGood(int good_id) {
+        storeMapper.deleteGoodStoreBind(good_id);
+        goodMapper.deleteById(good_id);
+        return new ResponseResult(200,"success");
     }
 
 

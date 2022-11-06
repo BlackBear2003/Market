@@ -14,7 +14,13 @@ public interface StoreMapper extends BaseMapper<Store> {
     public int insertGoodIdForStore(int store_id,int good_id);
 
     public int insertUserStoreBind(int user_id,int store_id);
-    public int deleteUserStoreBind(int user_id);
+    public int deleteUserStoreBindByStoreId(int store_id);
 
     public List<Integer> getGoodIdByStoreId(int store_id);
+    public Integer getStoreIdByGoodId(int good_id);
+
+    public int deleteGoodStoreBind(int good_id);
+
+
+
 }

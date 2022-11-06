@@ -4,6 +4,7 @@ import com.wzl.market.pojo.Good;
 import com.wzl.market.pojo.User;
 import com.wzl.market.security.LoginUser;
 import com.wzl.market.service.GoodService;
+import com.wzl.market.service.Impl.ChatMessageServiceImpl;
 import com.wzl.market.service.Impl.GoodServiceImpl;
 import com.wzl.market.utils.ResponseResult;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -19,11 +20,14 @@ public class DemoController {
     @Autowired
     GoodServiceImpl goodService;
     //@ResponseBody
+    @Autowired
+    ChatMessageServiceImpl chatMessageService;
+
 
     @GetMapping("/demo")
-    @PreAuthorize("hasAnyAuthority('goodbye')")
-    public String  getDemo(){
-        return "hello world";
+    //@PreAuthorize("hasAnyAuthority('goodbye')")
+    public ResponseResult getDemo(){
+        return chatMessageService.test();
     }
     @GetMapping("/hello")
     @PreAuthorize("hasAnyAuthority('hello')")

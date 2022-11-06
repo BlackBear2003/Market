@@ -55,7 +55,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public ResponseResult setLocation(int id,String tempAddress,String tempAddressProvince,String tempAddressCity,String tempAddressArea,double tempAddressLat,double tempAddressLng) throws Exception {
-
         User user = userMapper.selectById(id);
         user.setTempAddress(tempAddress);
         user.setTempAddressProvince(tempAddressProvince);
@@ -70,7 +69,6 @@ public class UserServiceImpl implements UserService {
             throw new Exception();
         }
     }
-
 
     @Override
     @Transactional
@@ -93,11 +91,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public ResponseResult getAllInfo(int id) {
         User user = userMapper.selectById(id);
-        return new ResponseResult(200,"自己的全部信息",user);
+        return new ResponseResult(200," 查询成功",user);
     }
 
     @Override
-    @Transactional
     public ResponseResult getPublicInfo(int id) {
         HashMap<String, Object> map = new HashMap<>();
         User user=userMapper.selectById(id);
@@ -108,7 +105,7 @@ public class UserServiceImpl implements UserService {
         map.put("gender",user.getGender());
         map.put("province",user.getTempAddressProvince());
         map.put("city",user.getTempAddressCity());
-        return new ResponseResult(200,"用户的公开信息",map);
+        return new ResponseResult(200,"查询成功",map);
     }
 
     @Override
