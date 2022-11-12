@@ -86,26 +86,25 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    public ResponseResult listPublishGoods(int storeId) {
+    public ResponseResult listPublishGoods(int storeId,int current,int size) {
         List<Integer> idList = storeMapper.getGoodIdByStoreId(storeId);
         QueryWrapper<Good> wrapper=new QueryWrapper<>();
         wrapper.in("good_id",idList);
         wrapper.eq("publish_status",1);
-        List<Good> list = goodMapper.selectList(wrapper);
-        return new ResponseResult<>(200,"查询成功",list);
+        Page<Good> page = new Page<>(current,size,true);
+        IPage<Good> iPage = goodMapper.selectPage(page,wrapper);
+        return new ResponseResult<>(200,"查询成功,总数:"+iPage.getTotal(),iPage.getRecords());
     }
 
     @Override
-    public ResponseResult listUnPublishGoods() {
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int id = loginUser.getUser().getUserId();
-        int storeId=storeMapper.selectStoreIdByUserId(id);
+    public ResponseResult listUnPublishGoods(int storeId,int current,int size) {
         List<Integer> idList = storeMapper.getGoodIdByStoreId(storeId);
         QueryWrapper<Good> wrapper=new QueryWrapper<>();
         wrapper.in("good_id",idList);
         wrapper.eq("publish_status",0);
-        List<Good> list = goodMapper.selectList(wrapper);
-        return new ResponseResult<>(200,"查询成功",list);
+        Page<Good> page = new Page<>(current,size,true);
+        IPage<Good> iPage = goodMapper.selectPage(page,wrapper);
+        return new ResponseResult<>(200,"查询成功,总数:"+iPage.getTotal(),iPage.getRecords());
     }
 
     @Override

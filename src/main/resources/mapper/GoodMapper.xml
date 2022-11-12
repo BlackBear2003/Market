@@ -5,4 +5,25 @@
         select *
         from t_good where category_id = #{category_id};
     </select>
+
+
+
+    <select id="searchGood" parameterType="map" resultType="map">
+        select t.* from(
+        select t_good.*, ST_Distance_sphere(point(
+        (SELECT store_address_lng from t_store where t_store.store_id = (SELECT t_store_good.store_id from t_store_good WHERE t_store_good.good_id = t_good.good_id)),
+        (SELECT store_address_lat from t_store where t_store.store_id = (SELECT t_store_good.store_id from t_store_good WHERE t_store_good.good_id = t_good.good_id))),
+        point(#{lng}, #{lat})) 'dis' from t_good WHERE 1=1
+        <if test="goodName != null and goodName != ''">
+        and good_name like concat('%',#{goodName},'%')
+        </if>
+        <if test="up != 0">
+        and price >= #{down} and price <![CDATA[ <= ]]> up
+        </if>
+        <if test="categoryId != 0">
+            and category_id = #{categoryId}
+        </if>
+        )t
+        order by t.dis asc;
+    </select>
 </mapper>

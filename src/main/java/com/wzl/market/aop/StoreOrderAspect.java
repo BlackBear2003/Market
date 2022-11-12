@@ -22,13 +22,8 @@ public class StoreOrderAspect {
     @Pointcut("@annotation(com.wzl.market.aop.StoreOrderCheck)")
     public void check(){}
 
-    @Around("check() && args(store_id,order_id)")
+    @Around("check() && args(store_id,order_id,..)")
     public Object around(ProceedingJoinPoint pjp, int store_id,int order_id) throws Throwable {
-        /*先拿到Request请求体
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
-        StringBuffer url = request.getRequestURL();
-         */
 
         int authStoreId = orderMapper.selectById(order_id).getStoreId();
 

@@ -9,9 +9,10 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class FastJsonRedisSerializer<T> implements RedisSerializer<T> {
-    public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+    public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     private Class<T> clazz;
 
@@ -26,6 +27,7 @@ public class FastJsonRedisSerializer<T> implements RedisSerializer<T> {
         this.clazz = clazz;
     }
 
+
     @Override
     public byte[] serialize(T t) throws SerializationException
     {
@@ -33,6 +35,7 @@ public class FastJsonRedisSerializer<T> implements RedisSerializer<T> {
         {
             return new byte[0];
         }
+        //System.out.println(JSON.toJSONString(t, SerializerFeature.WriteClassName));
         return JSON.toJSONString(t, SerializerFeature.WriteClassName).getBytes(DEFAULT_CHARSET);
     }
 

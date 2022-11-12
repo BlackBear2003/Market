@@ -108,6 +108,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper,Order> implements 
         order.setCreateTime(new Date(System.currentTimeMillis()));
         order.setPayTime(new Date(System.currentTimeMillis()));
         order.setOrderStatus(0);
+        orderMapper.insert(order);
         return new ResponseResult(200,"success");
     }
 }

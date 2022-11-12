@@ -1,10 +1,7 @@
 package com.wzl.market.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.BoundSetOperations;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -178,6 +175,17 @@ public class RedisCache {
     }
 
     /**
+     * 获得缓存的Map
+     *
+     * @param key
+     * @return
+     */
+    public Cursor<Map.Entry<Object,Object>> scanCacheMap(final String key)
+    {
+        return redisTemplate.opsForHash().scan(key,ScanOptions.NONE);
+    }
+
+    /**
      * 往Hash中存入数据
      *
      * @param key Redis键
@@ -188,6 +196,8 @@ public class RedisCache {
     {
         redisTemplate.opsForHash().put(key, hKey, value);
     }
+
+
 
     /**
      * 获取Hash中的数据

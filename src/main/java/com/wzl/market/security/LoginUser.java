@@ -12,6 +12,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LoginUser implements UserDetails {
+    @Override
+    public String toString() {
+        return "LoginUser{" +
+                "user=" + user +
+                ", permissions=" + permissions +
+                ", authorities=" + authorities +
+                '}';
+    }
 
     private User user;
     List<String> permissions;

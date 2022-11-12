@@ -20,13 +20,8 @@ public class StoreAuthAspect {
     @Pointcut("@annotation(com.wzl.market.aop.StoreAuthCheck)")
     public void check(){}
 
-    @Around("check() && args(store_id)")
+    @Around("check() && args(store_id,..)")
     public Object around(ProceedingJoinPoint pjp,int store_id) throws Throwable {
-        /*先拿到Request请求体
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
-        StringBuffer url = request.getRequestURL();
-         */
 
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int loginUserId = loginUser.getUser().getUserId();
@@ -39,6 +34,4 @@ public class StoreAuthAspect {
             return new ResponseResult<>(401, "权限不足");
         }
     }
-
-
 }

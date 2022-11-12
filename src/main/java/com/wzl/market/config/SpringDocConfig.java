@@ -23,13 +23,14 @@ public class SpringDocConfig {
                         .version("v1.0.0")
                         )
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
+                // Components section defines Security Scheme "mySecretHeader"
                 .components(new Components()
-                        .addSecuritySchemes(SECURITY_SCHEME_NAME,
-                                new SecurityScheme()
-                                        .name(SECURITY_SCHEME_NAME)
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")));
+                        .addSecuritySchemes("jwtHeader", new SecurityScheme()
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.HEADER)
+                                .name("token")))
+                // AddSecurityItem section applies created scheme globally
+                .addSecurityItem(new SecurityRequirement().addList("jwtHeader"));
 
     }
 }

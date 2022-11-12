@@ -1,14 +1,36 @@
 package com.wzl.market.config;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.util.AnnotationUtils;
 import com.wzl.market.utils.FastJsonRedisSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.util.ReflectionUtils;
+
+import java.time.Duration;
+import java.util.*;
 
 @Configuration
+@EnableCaching
 public class RedisConfig {
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Bean
     @SuppressWarnings(value = { "unchecked", "rawtypes" })
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory)
@@ -27,7 +49,53 @@ public class RedisConfig {
         template.setHashValueSerializer(serializer);
 
         template.afterPropertiesSet();
+
         return template;
+    }
+
+    @Bean
+    @SuppressWarnings(value = { "unchecked", "rawtypes" })
+    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+        // 生成一个默认配置，通过config对象即可对缓存进行自定义配置
+        RedisSerializer<String> redisSerializer = new StringRedisSerializer();
+        // 使用FastJsonRedisSerializer来序列化和反序列化redis的value值
+        FastJsonRedisSerializer serializer = new FastJsonRedisSerializer(Object.class);
+        // 配置序列化
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig().serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new FastJsonRedisSerializer(Object.class)))
+                .entryTtl(Duration.ofSeconds(2626520))
+                .disableCachingNullValues();
+        Set<String> cacheNames = new HashSet<>();
+        cacheNames.add("cartCache");
+        return  RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(config).withInitialCacheConfigurations(buildInitCaches()).initialCacheNames(cacheNames).build();
+    }
+    private Map<String, RedisCacheConfiguration> buildInitCaches() {
+        HashMap<String, RedisCacheConfiguration> cacheConfigMap = new HashMap<>();
+        Arrays.stream(applicationContext.getBeanNamesForType(Object.class))
+                .map(applicationContext::getType).filter(Objects::nonNull)
+                .forEach(clazz -> {
+                            ReflectionUtils.doWithMethods(clazz, method -> {
+                                ReflectionUtils.makeAccessible(method);
+                                Cacheable cacheable = AnnotationUtils.findAnnotation(method, Cacheable.class);
+                                CachePut cachePut = AnnotationUtils.findAnnotation(method, CachePut.class);
+                                if (Objects.nonNull(cacheable)) {
+                                    for (String cache : cacheable.cacheNames()) {
+                                        RedisSerializationContext.SerializationPair<Object> sp = RedisSerializationContext.SerializationPair
+                                                .fromSerializer(new FastJsonRedisSerializer<>(Object.class));
+                                        cacheConfigMap.put(cache, RedisCacheConfiguration.defaultCacheConfig().serializeValuesWith(sp));
+                                    }
+                                }
+                                if (Objects.nonNull(cachePut)) {
+                                    for (String cache : cachePut.cacheNames()) {
+                                        RedisSerializationContext.SerializationPair<Object> sp = RedisSerializationContext.SerializationPair
+                                                .fromSerializer(new FastJsonRedisSerializer<>(Object.class));
+                                        cacheConfigMap.put(cache, RedisCacheConfiguration.defaultCacheConfig().serializeValuesWith(sp));
+                                    }
+                                }
+                            });
+                        }
+                );
+        return cacheConfigMap;
     }
 
 

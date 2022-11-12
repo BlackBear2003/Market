@@ -21,7 +21,7 @@ public class UserAuthAspect {
     @Pointcut("@annotation(com.wzl.market.aop.UserAuthCheck)")
     public void check(){}
 
-    @Around("check() && args(id)")
+    @Around("check() && args(id,..)")
     public Object around(ProceedingJoinPoint pjp,int id) throws Throwable {
         /*先拿到Request请求体
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();

@@ -22,7 +22,7 @@ public class StoreRefundAspect {
     public void check() {
     }
 
-    @Around("check() && args(store_id,refund_id)")
+    @Around("check() && args(store_id,refund_id,..)")
     public Object around(ProceedingJoinPoint pjp, int store_id, int refund_id) throws Throwable {
         /*先拿到Request请求体
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();

@@ -69,7 +69,7 @@ public class StoreController {
 
     @GetMapping("/{store_id}/order")
     @StoreAuthCheck
-    public ResponseResult getStoreOrders(@PathVariable("store_id")int store_id,@Param("current")int current, @Param("size")int size ){
+    public ResponseResult getStoreOrders(@PathVariable("store_id")int store_id,int current,int size ){
         return orderService.getAllByStoreId(store_id, current, size);
     }
 
@@ -110,13 +110,13 @@ public class StoreController {
     /******************************商品模块**********************************/
 
     @GetMapping("/{store_id}/good")
-    public ResponseResult getAllGood(@PathVariable("store_id")int store_id,@Param("current")int current, @Param("size")int size){
-        Page<Good> page = new Page<>(current,size);
-        QueryWrapper<Good> wrapper = new QueryWrapper<>();
-        wrapper.eq("store_id",store_id);
-        IPage<Good> goodIPage = goodService.page(page);
-        List<Good> list = goodIPage.getRecords();
-        return new ResponseResult(200,"total:"+goodIPage.getTotal(),list);
+    public ResponseResult getAllGood(@PathVariable("store_id")int store_id,int current, int size){
+        return storeService.listPublishGoods(store_id,current,size);
+    }
+
+    @GetMapping("/{store_id}/unpublishedGood")
+    public ResponseResult getAllUnpublishedGood(@PathVariable("store_id")int store_id,int current, int size){
+        return storeService.listUnPublishGoods(store_id,current,size);
     }
 
     @PostMapping("/{store_id}/good")
@@ -150,8 +150,6 @@ public class StoreController {
     }
 
     /***********************店铺定位    但是感觉好像没有必要做-- *********************/
-
-
 
 
 }

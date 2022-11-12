@@ -2,7 +2,9 @@ package com.wzl.market.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wzl.market.dao.UserMapper;
+import com.wzl.market.dao.UserRoleBindMapper;
 import com.wzl.market.pojo.User;
+import com.wzl.market.pojo.UserRoleBind;
 import com.wzl.market.service.RegisterService;
 import com.wzl.market.utils.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    UserRoleBindMapper userRoleBindMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -28,6 +32,10 @@ public class RegisterServiceImpl implements RegisterService {
             user = new User(0,username,password);
             userMapper.insert(user);
             userMapper.setRole(user.getUserId(), 2);
+            UserRoleBind bind = new UserRoleBind();
+            bind.setUserId(user.getUserId());
+            bind.setRoleId(2);
+            userRoleBindMapper.insert(bind);
             return new ResponseResult(200,"注册成功");
         }else{
             return new ResponseResult(HttpStatus.NOT_ACCEPTABLE.value(), "用户名已被使用");

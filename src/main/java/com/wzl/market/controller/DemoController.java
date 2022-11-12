@@ -27,7 +27,7 @@ public class DemoController {
     @GetMapping("/demo")
     //@PreAuthorize("hasAnyAuthority('goodbye')")
     public ResponseResult getDemo(){
-        return chatMessageService.test();
+        return null;
     }
     @GetMapping("/hello")
     @PreAuthorize("hasAnyAuthority('hello')")

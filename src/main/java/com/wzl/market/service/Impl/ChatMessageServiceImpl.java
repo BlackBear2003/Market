@@ -9,8 +9,4 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatMessage> implements ChatMessageService {
-    @Override
-    public ResponseResult test() {
-        return new ResponseResult(200,"liu kin wa kai wa ku lie!");
-    }
 }

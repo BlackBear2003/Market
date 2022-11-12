@@ -19,8 +19,8 @@ public interface StoreService {
 
     public ResponseResult update(int user_id, Store store);
 
-    public ResponseResult listPublishGoods(int storeId);
-    public ResponseResult listUnPublishGoods();
+    public ResponseResult listPublishGoods(int storeId,int current,int size);
+    public ResponseResult listUnPublishGoods(int storeId,int current,int size);
 
 
     @Transactional

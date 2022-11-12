@@ -18,13 +18,9 @@ public class StoreGoodAspect {
     @Pointcut("@annotation(com.wzl.market.aop.StoreGoodCheck)")
     public void check(){}
 
-    @Around("check() && args(store_id,good_id)")
+    @Around("check() && args(store_id,good_id,..)")
     public Object around(ProceedingJoinPoint pjp, int store_id, int good_id) throws Throwable {
-        /*先拿到Request请求体
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
-        StringBuffer url = request.getRequestURL();
-         */
+
         int authStoreId = storeMapper.getStoreIdByGoodId(good_id);
 
         if(authStoreId==store_id){
