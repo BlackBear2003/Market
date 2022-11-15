@@ -22,7 +22,7 @@ public class DownLoadServiceImpl implements DownLoadService {
     COSClient cosClient;
 
     public HttpServletResponse download(String url, HttpServletResponse response) throws IOException {
-
+        //System.out.println("in download");
         // Bucket的命名格式为 BucketName-APPID ，此处填写的存储桶名称必须为此格式
         String bucketName = "luke-1309838234";
         String key = url;
@@ -32,10 +32,10 @@ public class DownLoadServiceImpl implements DownLoadService {
         getObjectRequest.setTrafficLimit(80*1024*1024);
         COSObject cosObject = cosClient.getObject(getObjectRequest);
         COSObjectInputStream cosObjectInput = cosObject.getObjectContent();
-        response.setHeader("Content-disposition", "attachment; filename=" + URLEncoder.encode("Cat.gif", "UTF8"));
+        response.setHeader("Content-disposition", "attachment; filename=" + URLEncoder.encode(url+"", "UTF8"));
         //3.输出流：
-        IOUtils.copy(cosObjectInput, response.getOutputStream());
 
+        IOUtils.copy(cosObjectInput, response.getOutputStream());
         // 下载对象的 CRC64
         //String crc64Ecma = cosObject.getObjectMetadata().getCrc64Ecma();
         // 关闭输入流
