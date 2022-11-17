@@ -19,5 +19,6 @@ public interface UserService {
     public ResponseResult getAllInfo(int id);
     public ResponseResult getPublicInfo(int id);
 
+    @Transactional
     ResponseResult getUsersByPage(int current, int size);
 }
