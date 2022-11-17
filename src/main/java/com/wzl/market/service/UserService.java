@@ -1,12 +1,13 @@
 package com.wzl.market.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.wzl.market.pojo.User;
 import com.wzl.market.utils.ResponseResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface UserService {
+public interface UserService extends IService<User> {
 
     ResponseResult setGender(String gender) throws Exception;
 
@@ -19,6 +20,5 @@ public interface UserService {
     public ResponseResult getAllInfo(int id);
     public ResponseResult getPublicInfo(int id);
 
-    @Transactional
     ResponseResult getUsersByPage(int current, int size);
 }

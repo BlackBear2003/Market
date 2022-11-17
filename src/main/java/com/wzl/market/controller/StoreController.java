@@ -9,12 +9,10 @@ import com.wzl.market.aop.StoreGoodCheck;
 import com.wzl.market.aop.StoreOrderCheck;
 import com.wzl.market.aop.StoreRefundCheck;
 import com.wzl.market.pojo.Good;
+import com.wzl.market.pojo.GoodPicture;
 import com.wzl.market.pojo.Store;
 import com.wzl.market.security.LoginUser;
-import com.wzl.market.service.Impl.GoodServiceImpl;
-import com.wzl.market.service.Impl.OrderServiceImpl;
-import com.wzl.market.service.Impl.RefundServiceImpl;
-import com.wzl.market.service.Impl.StoreServiceImpl;
+import com.wzl.market.service.Impl.*;
 import com.wzl.market.service.OrderService;
 import com.wzl.market.utils.ResponseResult;
 import org.apache.ibatis.annotations.Param;
@@ -23,7 +21,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/store")
@@ -36,6 +36,8 @@ public class StoreController {
     OrderServiceImpl orderService;
     @Autowired
     RefundServiceImpl refundService;
+    @Autowired
+    GoodPictureServiceImpl goodPictureService;
 
 
     @PreAuthorize("hasAnyAuthority('admin')")
@@ -148,6 +150,26 @@ public class StoreController {
     public ResponseResult deleteGood(@PathVariable("store_id")int store_id,@PathVariable("good_id")int good_id){
         return goodService.deleteGood(good_id);
     }
+
+    @GetMapping("/{store_id}/good/{good_id}/picture")
+    public ResponseResult getPicOfGood(@PathVariable("store_id")int store_id,@PathVariable("good_id")int good_id){
+        Map<String,Object> map = new HashMap();
+        map.put("good_id",good_id);
+        List<GoodPicture> list = goodPictureService.listByMap(map);
+        return new ResponseResult(200,"success",list);
+    }
+
+    @PostMapping("/{store_id}/good/{good_id}/picture")
+    @StoreAuthCheck
+    @StoreGoodCheck
+    public ResponseResult getPicOfGood(@PathVariable("store_id")int store_id,@PathVariable("good_id")int good_id,@RequestBody GoodPicture goodPicture){
+        Boolean status = goodPictureService.save(goodPicture);
+        return new ResponseResult(200,status.toString());
+    }
+
+
+
+
 
     /***********************店铺定位    但是感觉好像没有必要做-- *********************/
 

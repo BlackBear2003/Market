@@ -7,10 +7,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wzl.market.pojo.ChatMessage;
 import com.wzl.market.pojo.ChatSession;
+import com.wzl.market.pojo.NotifyMessage;
 import com.wzl.market.service.Impl.ChatMessageServiceImpl;
 import com.wzl.market.service.Impl.ChatSessionServiceImpl;
 import com.wzl.market.service.Impl.NotifyMessageServiceImpl;
 import com.wzl.market.utils.RedisCache;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -34,7 +36,7 @@ public class SendMsgService {
     private RedisTemplate redisTemplate;
 
 
-
+    @Transactional
     public Boolean sendChatMsg(ChatMessage chatMessage){
         try {
             Integer receiverId =chatMessage.getReceiverId();
@@ -73,7 +75,6 @@ public class SendMsgService {
         return true;
     }
 
-    @Transactional
     public Boolean getUnreadChatMsgWithOne(int hostId,int guestId,int current,int size){
         Page<ChatMessage> page = new Page<>(current,size);
         QueryWrapper<ChatMessage> queryWrapper = new QueryWrapper<>();
@@ -86,5 +87,38 @@ public class SendMsgService {
         simpMessageSendingOperations.convertAndSend("/chat/"+hostId,list);
         return true;
     }
+
+    @Transactional
+    public Boolean sendNotification(@NotNull NotifyMessage notifyMessage){
+        int receiverId = notifyMessage.getReceiverId();
+        try{
+            if(redisTemplate.opsForValue().get("WebSocket.public."+receiverId)!=null){
+                //online
+                notifyMessage.setNotifyMessageStatus(1);
+                notifyMessageService.save(notifyMessage);
+                simpMessageSendingOperations.convertAndSend("/public/"+receiverId,notifyMessage);
+            }else{
+                //offline
+                notifyMessage.setNotifyMessageStatus(0);
+                notifyMessageService.save(notifyMessage);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public Boolean getUnreadNotificationWithOne(int receiverId,int current,int size){
+        Page<NotifyMessage> page = new Page<>(current,size);
+        QueryWrapper<NotifyMessage> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("receiver_id",receiverId);
+        IPage<NotifyMessage> iPage = notifyMessageService.page(page,queryWrapper);
+        List<NotifyMessage> list = iPage.getRecords();
+        simpMessageSendingOperations.convertAndSend("/public/"+receiverId,list);
+        return true;
+    }
+
+
 
 }
