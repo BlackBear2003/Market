@@ -49,7 +49,15 @@ public class MessagingController {
         }
     }
 
+    @MessageMapping("/public.online")
+    public void noticeOnline(@Payload int user_id){
+        redisTemplate.opsForSet().add("WebSocket.online",user_id,Duration.ofSeconds(15*60));
+    }
 
+    @MessageMapping("/public.offline")
+    public void noticeOffline(@Payload int user_id){
+        redisTemplate.opsForSet().remove("WebSocket.online",user_id);
+    }
 
 
 }

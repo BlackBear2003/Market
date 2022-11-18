@@ -92,7 +92,7 @@ public class SendMsgService {
     public Boolean sendNotification(@NotNull NotifyMessage notifyMessage){
         int receiverId = notifyMessage.getReceiverId();
         try{
-            if(redisTemplate.opsForValue().get("WebSocket.public."+receiverId)!=null){
+            if(redisTemplate.opsForSet().isMember("WebSocket.online",receiverId)){
                 //online
                 notifyMessage.setNotifyMessageStatus(1);
                 notifyMessageService.save(notifyMessage);

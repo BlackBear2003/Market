@@ -6,14 +6,14 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import static com.baomidou.mybatisplus.annotation.IdType.AUTO;
 
 @Data
-@TableName("t_cart")
 public class Cart implements Serializable {
     @TableId(type = AUTO)
-    private Integer cartId;
+    private String cartId;
     private Integer userId;
     private Integer goodId;
     private Integer goodAmount;

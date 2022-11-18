@@ -13,6 +13,8 @@ import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -30,42 +32,31 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements Ca
     @Override
     public List<Cart> getCartsByUserId(int user_id) {
         List<Cart> list = new ArrayList<>();
-        for (String key:
-             scan("cartCache::user_id_"+user_id)) {
-            list.add(redisCache.getCacheObject(key));
+        Cursor<Map.Entry<Object,Object>> cursor = redisTemplate.opsForHash().scan("cart:"+user_id,
+                ScanOptions.NONE);
+        while (cursor.hasNext()) {
+            Map.Entry<Object,Object> entry = cursor.next();
+            Object key = entry.getKey();
+            Object valueSet = entry.getValue();
+            list.add((Cart) valueSet);
         }
+        //关闭cursor
+        cursor.close();
         return list;
     }
 
     @Override
-    @CachePut(value = "cartCache",key = "'user_id_'+#user_id+'_cart_id_'+#result.cartId")
-    @Transactional
-    public Cart addCart(int user_id, Cart cart) {
+    public void addCart(int user_id, Cart cart) {
         cart.setUserId(user_id);
+        cart.setCartId(UUID.randomUUID().toString());
         cart.setAddTime(new Date(System.currentTimeMillis()));
-        cartMapper.insert(cart);
-        return cart;
+        redisTemplate.opsForHash().put("cart:"+user_id,"cart_id_"+cart.getCartId(),cart);
+        redisTemplate.expire("cart:"+user_id, Duration.ofDays(30));
     }
 
     @Override
-    @CacheEvict(value = "cartCache",key = "'user_id_'+#user_id+'_cart_id_'+#result")
-    @Transactional
-    public int deleteCart(int user_id, int cart_id) {
-        cartMapper.deleteById(cart_id);
-        return cart_id;
-    }
-
-    public Set<String> scan(String matchKey) {
-        Set<String> keys = (Set<String>) redisTemplate.execute((RedisCallback<Set<String>>) connection -> {
-            Set<String> keysTmp = new HashSet<>();
-            Cursor<byte[]> cursor = connection.scan(KeyScanOptions.scanOptions().match("*" + matchKey + "*").count(1000).build());
-            while (cursor.hasNext()) {
-                keysTmp.add(new String(cursor.next()));
-            }
-            cursor.close();
-            return keysTmp;
-        });
-        return keys;
+    public void deleteCart(int user_id, int cart_id) {
+        redisTemplate.opsForHash().delete("cart:"+user_id,"cart_id_"+cart_id);
     }
 
 }

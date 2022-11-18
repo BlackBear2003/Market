@@ -50,13 +50,15 @@ public class ShopController {
     public ResponseResult addCart(@RequestBody Cart cart){
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int user_id = loginUser.getUser().getUserId();
-        return new ResponseResult(200,"success",cartService.addCart(user_id,cart));
+        cartService.addCart(user_id,cart);
+        return new ResponseResult(200,"success");
     }
 
     @DeleteMapping("/cart")
     public ResponseResult deleteCart(int cart_id) {
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int user_id = loginUser.getUser().getUserId();
-        return new ResponseResult(200,"success",cartService.deleteCart(user_id,cart_id));
+        cartService.deleteCart(user_id,cart_id);
+        return new ResponseResult(200,"success");
     }
 }
