@@ -67,36 +67,9 @@ public class RedisConfig {
                 .disableCachingNullValues();
         Set<String> cacheNames = new HashSet<>();
         cacheNames.add("cartCache");
-        return  RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(config).withInitialCacheConfigurations(buildInitCaches()).initialCacheNames(cacheNames).build();
+        return  RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(config).initialCacheNames(cacheNames).build();
     }
-    private Map<String, RedisCacheConfiguration> buildInitCaches() {
-        HashMap<String, RedisCacheConfiguration> cacheConfigMap = new HashMap<>();
-        Arrays.stream(applicationContext.getBeanNamesForType(Object.class))
-                .map(applicationContext::getType).filter(Objects::nonNull)
-                .forEach(clazz -> {
-                            ReflectionUtils.doWithMethods(clazz, method -> {
-                                ReflectionUtils.makeAccessible(method);
-                                Cacheable cacheable = AnnotationUtils.findAnnotation(method, Cacheable.class);
-                                CachePut cachePut = AnnotationUtils.findAnnotation(method, CachePut.class);
-                                if (Objects.nonNull(cacheable)) {
-                                    for (String cache : cacheable.cacheNames()) {
-                                        RedisSerializationContext.SerializationPair<Object> sp = RedisSerializationContext.SerializationPair
-                                                .fromSerializer(new FastJsonRedisSerializer<>(Object.class));
-                                        cacheConfigMap.put(cache, RedisCacheConfiguration.defaultCacheConfig().serializeValuesWith(sp));
-                                    }
-                                }
-                                if (Objects.nonNull(cachePut)) {
-                                    for (String cache : cachePut.cacheNames()) {
-                                        RedisSerializationContext.SerializationPair<Object> sp = RedisSerializationContext.SerializationPair
-                                                .fromSerializer(new FastJsonRedisSerializer<>(Object.class));
-                                        cacheConfigMap.put(cache, RedisCacheConfiguration.defaultCacheConfig().serializeValuesWith(sp));
-                                    }
-                                }
-                            });
-                        }
-                );
-        return cacheConfigMap;
-    }
+
 
 
 }

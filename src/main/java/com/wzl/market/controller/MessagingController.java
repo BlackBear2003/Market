@@ -31,6 +31,7 @@ public class MessagingController {
         redisTemplate.expire("WebSocket.chat."+chatMessage.getSenderId(), Duration.ofSeconds(120));
         rabbitTemplate.convertAndSend("chatModuleExchange","message.chat",JsonUtil.parseObjToJson(chatMessage));
     }
+
     @MessageMapping("/chat.beginChatWithOne")
     public void beginChatWithOne(@Payload int sender_id,@Payload int receiver_id){
         redisTemplate.opsForValue().set("WebSocket.chat."+sender_id,receiver_id);
@@ -47,4 +48,16 @@ public class MessagingController {
             redisTemplate.delete("WebSocket.chat."+sender_id);
         }
     }
+
+    @MessageMapping("/public.online")
+    public void noticeOnline(@Payload int user_id){
+        redisTemplate.opsForSet().add("WebSocket.online",user_id,Duration.ofSeconds(15*60));
+    }
+
+    @MessageMapping("/public.offline")
+    public void noticeOffline(@Payload int user_id){
+        redisTemplate.opsForSet().remove("WebSocket.online",user_id);
+    }
+
+
 }

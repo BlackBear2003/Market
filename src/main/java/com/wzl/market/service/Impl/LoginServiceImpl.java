@@ -39,12 +39,18 @@ public class LoginServiceImpl implements LoginService {
         //4自己生成jwt给前端
         LoginUser loginUser= (LoginUser)(authenticate.getPrincipal());
         String userId = String.valueOf(loginUser.getUser().getUserId());
+        if(loginUser.getUser().getAuditStatus()==1){
+            return new ResponseResult(403,"账号已被封禁");
+        }
+
+
         String jwt = JwtUtil.createJWT(userId);
         Map<String,String> map=new HashMap();
         map.put("token",jwt);
         //map.put("auth",loginUser.getAuthorities().toString());
         //5系统用户相关所有信息放入redis
         redisCache.setCacheObject("login:"+userId,loginUser);
+
 
         return new ResponseResult(200,"登陆成功",map);
     }
