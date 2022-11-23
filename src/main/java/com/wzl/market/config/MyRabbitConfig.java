@@ -133,6 +133,8 @@ public class MyRabbitConfig {
 
                 Boolean sendToWebsocket = sendMsgService.sendChatMsg(chatMessage);
 
+                System.out.println("is Send? "+sendToWebsocket);
+
                 if (sendToWebsocket){
                     System.out.println("消息处理成功！ 已经推送到websocket！");
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), true); //确认消息成功消费

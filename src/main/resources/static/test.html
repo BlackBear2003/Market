@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+
+
+<script src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
+<script>
+    //var sock = new SockJS("/ws");
+    //var client = Stomp.over(sock);
+    //client.connect({}, onConnected, onError);
+
+    var websocket = new WebSocket("ws://localhost:8080/ws");
+    connecting();
+    window.addEventListener("load", connecting, false);
+
+
+    function connecting()
+    {
+        websocket.onopen = function(evt) { onOpen(evt) };
+        websocket.onclose = function(evt) { onClose(evt) };
+        websocket.onmessage = function(evt) { onMessage(evt) };
+        websocket.onerror = function(evt) { onError(evt) };
+    }
+
+    function sendEvent(){
+        let msg = document.getElementById("txtMsg").value
+        doSend(msg);
+    }
+
+    //连接上事件
+    function onOpen(evt)
+    {
+        writeToScreen("CONNECTED");
+        doSend("WebSocket 已经连接成功！");
+    }
+
+    //关闭事件
+    function onClose(evt)
+    {
+        writeToScreen("连接已经断开！");
+    }
+
+    //后端推送事件
+    function onMessage(evt)
+    {
+        writeToScreen('<span style="color: blue;">服务器: ' + evt.data+'</span>');
+    }
+
+    function onError(evt)
+    {
+        writeToScreen('<span style="color: red;">异常信息:</span> ' + evt.data);
+    }
+
+    function doSend(message)
+    {
+        writeToScreen("客户端A: " + message);
+        websocket.send(message);
+    }
+
+
+    function writeToScreen(message)
+    {
+        let pre = document.createElement("p");
+        pre.innerHTML = message;
+        output.appendChild(pre);
+    }
+</script>
+
+
+</html>

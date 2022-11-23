@@ -44,16 +44,18 @@ public class SendMsgService {
             if(redisTemplate.opsForValue().get("WebSocket.chat."+receiverId)==senderId){//对面正在和你对hua
                 chatMessage.setChatMessageStatus(1);//设为已读
                 chatMessageService.save(chatMessage);
-                simpMessageSendingOperations.convertAndSend("/chat/"+receiverId,chatMessage);
+                simpMessageSendingOperations.convertAndSend("/topic/chat."+receiverId,chatMessage);
 
                 UpdateWrapper<ChatSession> wrapper = new UpdateWrapper<>();
                 wrapper.eq("host_id",senderId).eq("guest_id",receiverId);
                 wrapper.set("last_chat_id",chatMessage.getChatMessageId());
                 chatSessionService.update(wrapper);
                 UpdateWrapper<ChatSession> wrapper1 = new UpdateWrapper<>();
-                wrapper.eq("host_id",receiverId).eq("guest_id",senderId);
-                wrapper.set("last_chat_id",chatMessage.getChatMessageId());
+                wrapper1.eq("host_id",receiverId).eq("guest_id",senderId);
+                wrapper1.set("last_chat_id",chatMessage.getChatMessageId());
                 chatSessionService.update(wrapper1);
+
+                return true;
 
             }else{
                 chatMessage.setChatMessageStatus(0);//设为未读
@@ -64,15 +66,16 @@ public class SendMsgService {
                 wrapper.set("last_chat_id",chatMessage.getChatMessageId());
                 chatSessionService.update(wrapper);
                 UpdateWrapper<ChatSession> wrapper1 = new UpdateWrapper<>();
-                wrapper.eq("host_id",receiverId).eq("guest_id",senderId);
-                wrapper.set("last_chat_id",chatMessage.getChatMessageId()).setSql(" unread_count = unread_count + 1 ");
+                wrapper1.eq("host_id",receiverId).eq("guest_id",senderId);
+                wrapper1.set("last_chat_id",chatMessage.getChatMessageId()).setSql(" unread_count = unread_count + 1 ");
                 chatSessionService.update(wrapper1);
+
+                return true;
             }
         }
         catch (Exception e){
             return false;
         }
-        return true;
     }
 
     public Boolean getUnreadChatMsgWithOne(int hostId,int guestId,int current,int size){
@@ -84,7 +87,7 @@ public class SendMsgService {
         queryWrapper.orderByDesc("create_date");
         IPage<ChatMessage> iPage = chatMessageService.page(page,queryWrapper);
         List<ChatMessage> list = iPage.getRecords();
-        simpMessageSendingOperations.convertAndSend("/chat/"+hostId,list);
+        simpMessageSendingOperations.convertAndSend("/topic/chat."+hostId,list);
         return true;
     }
 
@@ -96,7 +99,7 @@ public class SendMsgService {
                 //online
                 notifyMessage.setNotifyMessageStatus(1);
                 notifyMessageService.save(notifyMessage);
-                simpMessageSendingOperations.convertAndSend("/public/"+receiverId,notifyMessage);
+                simpMessageSendingOperations.convertAndSend("/topic/public."+receiverId,notifyMessage);
             }else{
                 //offline
                 notifyMessage.setNotifyMessageStatus(0);
@@ -115,7 +118,7 @@ public class SendMsgService {
         queryWrapper.eq("receiver_id",receiverId);
         IPage<NotifyMessage> iPage = notifyMessageService.page(page,queryWrapper);
         List<NotifyMessage> list = iPage.getRecords();
-        simpMessageSendingOperations.convertAndSend("/public/"+receiverId,list);
+        simpMessageSendingOperations.convertAndSend("/topic/public."+receiverId,list);
         return true;
     }
 
