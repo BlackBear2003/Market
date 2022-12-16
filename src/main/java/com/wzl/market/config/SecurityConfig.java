@@ -60,7 +60,6 @@ public class SecurityConfig {
                 //不通过Session获取SecurityContext
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .antMatcher("/ws")
                 .authorizeRequests()
                 // 对于登录接口 允许匿名访问
                 .antMatchers("/api/user/account/login").anonymous()

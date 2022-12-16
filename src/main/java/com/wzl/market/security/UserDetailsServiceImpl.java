@@ -1,5 +1,6 @@
 package com.wzl.market.security;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wzl.market.dao.UserMapper;
 import com.wzl.market.pojo.User;
 import com.wzl.market.security.LoginUser;
@@ -23,9 +24,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Map<String,Object> user_name_map = new HashMap<String, Object>();
-        user_name_map.put("user_name",username);
-        User user = userMapper.selectByMap(user_name_map).get(0);
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("user_name",username);
+        User user = userMapper.selectOne(wrapper);
+        if(user==null) {
+            throw new UsernameNotFoundException("no username found");
+        }
         String password  = user.getPassword();
         password = passwordEncoder.encode(password);
 

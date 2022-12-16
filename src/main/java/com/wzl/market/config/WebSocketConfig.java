@@ -23,9 +23,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws").setAllowedOriginPatterns("*")
                 .withSockJS().setClientLibraryUrl("https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js")
                 .setMessageCodec(new FastjsonSockJsMessageCodec());
-        registry.addEndpoint("/alone") .setAllowedOrigins("*")
-//                .setHandshakeHandler(new CustomHandshakeHandler())
-               .withSockJS();
     }
 
     @Override
